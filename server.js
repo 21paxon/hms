@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const JWT_SECRET = process.env.JWT_SECRET;
+
 
 const roomRoutes = require('./routes/roomRoutes');
 const userRoutes = require('./routes/userroutes');  // <--- This line must exist

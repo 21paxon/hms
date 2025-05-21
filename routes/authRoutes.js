@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../db'); // adjust if your db file is named differently
 
+
+
 const router = express.Router();
 const JWT_SECRET = 'your_jwt_secret'; // store this securely
 
