@@ -59,7 +59,7 @@ router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const {
     room_number,
-    type,
+    type,          
     capacity,
     price_per_month,
     status
