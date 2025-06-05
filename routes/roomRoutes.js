@@ -13,6 +13,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET only available rooms (not allocated to any student)
+router.get('/available', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM rooms WHERE student_id IS NULL ORDER BY id');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('❌ Error fetching available rooms:', err);
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
 // GET one room by ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
@@ -59,7 +70,7 @@ router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const {
     room_number,
-    type,          
+    type,
     capacity,
     price_per_month,
     status
@@ -103,6 +114,30 @@ router.delete('/:id', async (req, res) => {
     res.json({ status: 'success', message: 'Room deleted successfully' });
   } catch (err) {
     console.error('❌ Error deleting room:', err);
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// ✅ POST: Allocate a student to a room
+router.post('/:roomId/allocate/:studentId', async (req, res) => {
+  const { roomId, studentId } = req.params;
+
+  try {
+    const updateQuery = `
+      UPDATE rooms
+      SET student_id = $1
+      WHERE id = $2
+      RETURNING *;
+    `;
+    const result = await pool.query(updateQuery, [studentId, roomId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ status: 'error', message: 'Room not found' });
+    }
+
+    res.json({ status: 'success', data: result.rows[0] });
+  } catch (err) {
+    console.error('❌ Error allocating student to room:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 });
