@@ -120,7 +120,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // ✅ POST: Allocate a student to a room
-router.post('/:room_id/allocate/:student_id', async (req, res) => {
+router.post('/:roomId/allocate/:studentId', async (req, res) => {
   const { roomId, studentId } = req.params;
 
   try {
