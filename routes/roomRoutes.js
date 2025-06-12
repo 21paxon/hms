@@ -114,14 +114,11 @@ router.delete('/:id', async (req, res) => {
 // 🟪 Allocate a student to a room
 router.post('/:roomId/allocate/:studentId', async (req, res) => {
   const { roomId, studentId } = req.params;
+  console.log(`Allocating student ${studentId} to room ${roomId}`);
 
   try {
-    // Optionally check if student exists — do you want to?
     const result = await pool.query(
-      `UPDATE rooms
-       SET student_id = $1
-       WHERE id = $2
-       RETURNING *`,
+      `UPDATE rooms SET student_id = $1 WHERE id = $2 RETURNING *`,
       [studentId, roomId]
     );
 
@@ -131,9 +128,10 @@ router.post('/:roomId/allocate/:studentId', async (req, res) => {
 
     res.json({ status: 'success', data: result.rows[0] });
   } catch (err) {
-    console.error('Error allocating room:', err.message);
+    console.error('❌ Allocation failed:', err.stack);
     res.status(500).json({ status: 'error', message: 'Internal server error' });
   }
 });
+
 
 module.exports = router;
